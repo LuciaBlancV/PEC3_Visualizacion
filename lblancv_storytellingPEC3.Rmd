@@ -1,0 +1,265 @@
+---
+title: "Visualización de Datos PEC3"
+author: "Lucia Blanc Velázquez"
+date: "2023-12-20"
+output:
+  html_document:
+    toc: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Creación de una visualización de datos storytelling (PEC3)
+
+## Descripción y enunciado
+
+El objetivo de esta prueba de evaluación continua es que el estudiante sea capaz de crear una narrativa de datos con técnicas de visualización, es decir, una visualización tipo storytelling. Hans Rossling, unos de los líderes de narrativa de datos, en uno de sus famosos videos comenta: "Tener los datos no es suficiente, hay que mostrarlos de forma que la gente los disfrute y los entienda".
+
+
+
+### **Contenidos en Netflix 2021: Análisis del crecimiento y la distribución de los contenidos**
+
+Hoy en día, Netflix es una de las plataformas más usadas para ver contenido online, es por eso, que vamos a investigar en que momento empezó realmente a ser más conocida, y acercándonos a la actualidad (2023), las poblaciones que la consumen más. 
+
+```{r}
+# Importamos las librerías necesarios
+library(plotly)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(visdat)
+library(igraph)
+library(networkD3)
+```
+
+
+## Importación de los datos
+El conjunto de datos netflix_titles.xlsx se encuentra disponible en la plataforma Kaggle: https://www.kaggle.com/datasets/shivamb/netflix-shows
+
+Este conjunto de datos tabulares consiste en listados de  las películas y programas de televisión disponibles en Netflix, junto con detalles como el reparto, los directores, las puntuaciones, el año de estreno, la duración, etc.
+
+Las variables que presenta el conjunto de datos son:
++ **show_id**: identificador único para cada película o serie de Netflix.
++ **type**: identificador película o serie (Movie o TV Show).
++ **title**: título del contenido.
++ **director**: director del contenido.
++ **cast**: actores involucrados en el contenido.
++ **country**: país donde se produjo el contenido.
++ **date_added**: fecha en la que fue añadido el contenido en Netflix.
++ **release_year**: año actual del lanzamiento del contenido.
++ **rating**: rating televisivo del contenido.
++ **duration**: duración total en minutos o nº de temporadas.
++ **listed_in**: género.
++ **description**: resumen descriptivo del contenido.
+
+
+```{r}
+# Importamos el conjunto de datos y vemos la estructura que tiene
+library(readxl)
+netflix_titles <- read_excel("~/Documents/AAESTUDIOS/UOC_Máster_Data_Science/4t_Semestre/Visualización_datos/PEC3/netflix_titles.xlsx", 
+    skip = 1)
+View(netflix_titles)
+
+# Resumen de las variables del conjunto de datos
+glimpse(netflix_titles)
+```
+
+
+
+## Limpieza de datos
+
+### Visualizamos los missing values y los limpiamos 
+```{r}
+# Visualizamos los missing values y los limpiamos 
+vis_miss(netflix_titles, sort_miss = T, cluster = T)
+
+mode <- function(x){
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+#Eliminamos los missings y demostramos que ya no hay
+netflix_titles <- netflix_titles %>% 
+  replace_na(list(country = mode(netflix_titles$country), rating = mode(netflix_titles$rating), 
+                  director = "Unknown", cast = "Unknown", 
+                  date_added = mode(netflix_titles$date_added)))
+vis_miss(netflix_titles)
+
+anyDuplicated(netflix_titles)
+```
+
+
+
+
+### Transformación del conjunto de datos
+
+#### Cambio de tipos de datos: "type" a factor y "date_added" a datetime
+#### Agregación de columnas: "year_added", "main_country", "main_cast", "target_age", "genre"
+```{r}
+# Obtenemos nuevas columnas a partir de country, cast y listed_in
+# También se cambian las etiquetas de la clasificación a 4 categorías distintas
+netflix_titles <- netflix_titles %>%
+  mutate(main_country = map(str_split(country, ", "), 1), 
+         main_cast = map(str_split(cast, ", "), 1), 
+         genre = map(str_split(listed_in, ", "), 1)) %>% 
+  unnest(cols = c(main_country, main_cast, genre)) %>% 
+  mutate(type = as.factor(type), 
+         date_added = mdy(date_added),
+         year_added = year(date_added),
+         main_country = str_remove(main_country, ","),
+         target_age = factor(sapply(rating, switch, 
+                             'TV-PG' = 'Older Kids', 
+                             'TV-MA' = 'Adults', 
+                             'TV-Y7-FV' = 'Older Kids',
+                             'TV-Y7' = 'Older Kids',
+                             'TV-14' = 'Teens',
+                             'R' = 'Adults',
+                             'TV-Y' = 'Kids',
+                             'NR' = 'Adults',
+                             'PG-13' = 'Teens',
+                             'TV-G' = 'Kids',
+                             'PG' = 'Older Kids',
+                             'G' = 'Kids',
+                             'UR' = 'Adults',
+                             'NC-17' = 'Adults'), level = c("Kids", "Older Kids", "Teens", "Adults"))
+         ) 
+head(netflix_titles)
+```
+
+
+
+
+
+
+## Visualización: "Crecimiento del nº de contenidos por año"
+
+La siguiente visualización muestra el crecimiento de los contenidos de Netflix según los años, en este caso des de 2008 hasta 2021.
+En el gráfico, se observa el cambio de recuentos de forma acumulativa por cada contenido, ya sea película (Movie) o serie de televisión (TV SHow).
+
+```{r}
+# Función para mostrar de manera acumulada e interactiva
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+# Transformaciones para acumular los contenidos de cada año
+mtv_growth <- netflix_titles %>% 
+  group_by(year_added, type) %>% 
+  summarise(movie_count = n()) %>% 
+  ungroup() %>% 
+  mutate(cumulative_count = ave(movie_count, type, FUN = cumsum)) %>% 
+  accumulate_by(~year_added) %>% 
+  ggplot(aes(x = year_added, y = cumulative_count, color = type, frame = frame)) +
+  geom_line(size = 1.5, alpha = 0.8)+
+  geom_point(size = 3.5, shape = 21, fill = "white", aes(text = paste0("Year: ", year_added, "<br>",
+                                                   "Content Count: ", cumulative_count))) + 
+  scale_color_manual(values = c("firebrick", "grey16")) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Growth Numbers of Movies and TV Shows by Year",
+       x = "",
+       y = "Number of Movies/TV Shows",
+       color = "",
+       ) +
+  theme_minimal() +
+  theme(title = element_text(face = "bold"))
+
+
+# Gráfico interactivo con la animación
+ggplotly(mtv_growth, tooltip = c("text", "frame")) %>%
+  config(displayModeBar = F)
+
+```
+
+En esta visualización se muestran los contenidos de la plataforma de Netflix des de 2008 hasta 2021, lo que nos permite ver un aumento bastante notório a partir del año 2015 hasta la actualidad, sobretodo en contenido de películas. 
+
+
+
+
+
+
+## Visualización: "Distribución de contenidos de Netflix en diferentes países"
+
+Usamos el mapa cloropleth para diferenciar la distribución de la cantidad de contenidos de la plataforma de Netflix por país.
+
+```{r}
+# Importamos los datos del mapa ggplot2
+library(maps)
+mapdata <- map_data("world")
+
+
+# Cambiamos las etiquetas de varíos países
+netflix_for_map <- netflix_titles %>% 
+  mutate(main_country = str_replace_all(main_country, 
+                             c("United States" = "USA",
+                               "United Kingdom" = "UK",
+                               "Hong Kong" = "China",
+                               "Soviet Union" = "Russia",
+                               "West Germany" = "Germany")))
+
+
+# Contabilizamos y acumulamos el nº de contenidos por cada país
+count_country <- netflix_for_map %>% 
+  group_by(main_country) %>% 
+  summarise(content_count = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(content_count))
+
+
+# Unimos los datos del mapa y los datos utilitzados para que coincidan
+map_join <- mapdata %>% 
+  left_join(. , count_country, by = c("region"="main_country")) %>% 
+  mutate(content_count = replace_na(content_count, 0))
+
+
+# Generamos el gráfico con ggplot() y plotly para hacer el gráfico interactivo
+temp <- ggplot() +
+  geom_polygon(data = map_join, 
+               aes(fill = content_count, x = long, y = lat, 
+                   group = group, 
+                   text = paste0(region, "<br>",
+                                 "Netflix Contents: ", content_count)),
+               size = 0, alpha = .9, color = "black"
+               ) + 
+  labs(title = "Distribution of Netflix Contents by Country") +
+  theme_void() +
+  scale_fill_gradient(name = "Content Count", 
+                      trans = "pseudo_log",
+                      breaks = c(0, 7, 56, 403, 3000),
+                      labels = c(0, 7, 56, 403, 3000),
+                      low =  "bisque2",
+                      high = "#b20710") +
+  theme(panel.grid.major = element_blank(),
+        axis.line = element_blank(),
+        plot.title = element_text(face = "bold")) 
+
+
+ggplotly(temp, tooltip = "text") %>% 
+  config(displayModeBar = F) %>% 
+  layout(legend = list(x = .1, y = .9))
+
+```
+
+En el gráfico generado se puede observar como Estados Unidos, con un total de 4.042, es el país que más contenidos produce en la plataforma de Netflix, hecho que tiene sentido, ya que, la plataforma se creó en este país. 
+
+También podemos observar, como India es el segundo país con más contenidos en la plataforma, distribuyendo un total de 1008 contenidos distintos. 
+
+
+
+
+## Conclusión
+
+En conclusión, los datos explotados de la plataforma de Netflix pueden ser explorados en mayor profundidad, ya que, contienen mucha información. En este ejercicio se ha explorado el crecimiento de los contenidos a lo largo de los años y la distribución de los contenidos según los países de todo el mundo. 
+
+Hemos podido comprobar como los contenidos de Netflix aumentaron significativamente a partir del año 2015, y que actualmente (o según los datos, hasta 2021) siguen creciendo de manera lineal. Por otro lado, también hemos podido reforzar que estos contenidos derivan principalmente de Estados Unidos y India, ya que contienen un elevado número de contenidos en comparación con el resto de paises. 
+
+
+
+
+
