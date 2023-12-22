@@ -133,7 +133,7 @@ head(netflix_titles)
 
 
 
-## Visualización: "Crecimiento del nº de contenidos por año"
+## Visualización: "Crecimiento del nº de contenidos en Netflix por año"
 
 La siguiente visualización muestra el crecimiento de los contenidos de Netflix según los años, en este caso des de 2008 hasta 2021.
 En el gráfico, se observa el cambio de recuentos de forma acumulativa por cada contenido, ya sea película (Movie) o serie de televisión (TV SHow).
