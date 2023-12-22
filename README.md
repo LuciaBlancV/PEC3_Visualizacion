@@ -14,7 +14,8 @@ Creación con R Studio
 
 ### 1. Crecimiento del nº de contenidos en Netflix por año
 
-![Uploading Screenshot 2023-12-22 at 16.59.08.png…]() 
+<img width="804" alt="Screenshot 2023-12-22 at 16 59 08" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/9d608bfd-106e-4b2e-8560-d14e5873be97">
+
 
 
 
