@@ -14,13 +14,15 @@ El documento de código de la creación de las visualización se encuentran en e
 
 Dataset obtenido de Kaggle ( https://www.kaggle.com/datasets/shivamb/netflix-shows)
 
-Creación con R Studio
+Creación con R Studio y Flourish
 
 
 
 ### 1. Wordcloud títulos Netflix
 
-![Vis1](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/b9bb58be-20dd-4d7c-8141-508a7af03256)
+![WordCloud Titles Netflix-2](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/9c0c4ecf-1f30-4a53-984e-a3d6340ca722)
+
+
 
 
 
@@ -28,6 +30,11 @@ Creación con R Studio
 ### 2. Crecimiento del nº de contenidos de Netflix por año
 
 <img width="691" alt="Vis2" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/574f3a73-1cee-4cd3-9a14-696f5757f50b">
+
+
+
+
+
 
 
 
