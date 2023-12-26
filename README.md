@@ -1,4 +1,4 @@
-# PEC3 Visualizacion de Datos
+# PEC3 Visualizacion de Datos - Contenidos en Netflix 2021
 
 ## Máster Ciencia de Datos (UOC)
 
@@ -11,16 +11,23 @@ Dataset obtenido de Kaggle ( https://www.kaggle.com/datasets/shivamb/netflix-sho
 
 Creación con R Studio
 
-
-### 1. Crecimiento del nº de contenidos en Netflix por año
-
-<img width="804" alt="Screenshot 2023-12-22 at 16 59 08" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/9d608bfd-106e-4b2e-8560-d14e5873be97">
+![Netflix](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/40d365d5-fd4d-434a-a0c1-36d8ddf656a9)
 
 
+### 1. Wordcloud títulos Netflix
+
+![Vis1](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/ab367afb-2dc5-473f-a778-cb7ea96ba259)
 
 
 
-### 2. Distribución de contenidos de Netflix en diferentes países
+### 2. Crecimiento del nº de contenidos de Netflix por año
+
+<img width="691" alt="Vis2" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/574f3a73-1cee-4cd3-9a14-696f5757f50b">
 
 
-<img width="799" alt="Screenshot 2023-12-22 at 16 59 20" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/1c6bde74-3043-44fb-8339-0aca4a7541af">
+
+### 3. Distribución de contenidos de Netflix en diferentes países
+
+
+
+
