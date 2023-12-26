@@ -1,5 +1,10 @@
 # PEC3 Visualizacion de Datos - Contenidos en Netflix 2021
 
+![Netflix](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/40d365d5-fd4d-434a-a0c1-36d8ddf656a9)
+
+
+
+
 ## Máster Ciencia de Datos (UOC)
 
 ## Lucia Blanc Velázquez
@@ -11,7 +16,6 @@ Dataset obtenido de Kaggle ( https://www.kaggle.com/datasets/shivamb/netflix-sho
 
 Creación con R Studio
 
-![Netflix](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/40d365d5-fd4d-434a-a0c1-36d8ddf656a9)
 
 
 ### 1. Wordcloud títulos Netflix
