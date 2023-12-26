@@ -20,8 +20,7 @@ Creación con R Studio
 
 ### 1. Wordcloud títulos Netflix
 
-![Vis1](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/ab367afb-2dc5-473f-a778-cb7ea96ba259)
-
+<img width="683" alt="Screenshot 2023-12-26 at 23 34 44" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/6b553086-9d7b-42fc-abe0-98047ed48415">
 
 
 ### 2. Crecimiento del nº de contenidos de Netflix por año
