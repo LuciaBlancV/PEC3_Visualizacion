@@ -29,8 +29,7 @@ Creación con R Studio y Flourish
 
 ### 2. Crecimiento del nº de contenidos de Netflix por año
 
-<img width="691" alt="Vis2" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/574f3a73-1cee-4cd3-9a14-696f5757f50b">
-
+<img width="799" alt="Screenshot 2023-12-26 at 23 40 33" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/7c5de856-dd2a-4f78-88fb-a43a4da0ecba">
 
 
 
@@ -40,8 +39,9 @@ Creación con R Studio y Flourish
 
 ### 3. Distribución de contenidos de Netflix en diferentes países
 
+<img width="792" alt="Screenshot 2023-12-26 at 23 39 40" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/a8f99c53-f2db-4a82-b409-48676499ee8e">
 
-<img width="683" alt="Screenshot 2023-12-26 at 23 34 44" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/da5e5250-e779-4fa5-8ca8-bc46ce74dc70">
+
 
 
 
