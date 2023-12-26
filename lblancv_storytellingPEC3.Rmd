@@ -4,7 +4,7 @@ author: "Lucia Blanc Velázquez"
 date: "2023-12-20"
 output:
   html_document:
-    toc: TRUE
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -32,6 +32,9 @@ library(lubridate)
 library(visdat)
 library(igraph)
 library(networkD3)
+library(wordcloud)
+library(tm)
+library(slam)
 ```
 
 
@@ -41,17 +44,29 @@ El conjunto de datos netflix_titles.xlsx se encuentra disponible en la plataform
 Este conjunto de datos tabulares consiste en listados de  las películas y programas de televisión disponibles en Netflix, junto con detalles como el reparto, los directores, las puntuaciones, el año de estreno, la duración, etc.
 
 Las variables que presenta el conjunto de datos son:
+
 + **show_id**: identificador único para cada película o serie de Netflix.
+
 + **type**: identificador película o serie (Movie o TV Show).
+
 + **title**: título del contenido.
+
 + **director**: director del contenido.
+
 + **cast**: actores involucrados en el contenido.
+
 + **country**: país donde se produjo el contenido.
+
 + **date_added**: fecha en la que fue añadido el contenido en Netflix.
+
 + **release_year**: año actual del lanzamiento del contenido.
+
 + **rating**: rating televisivo del contenido.
+
 + **duration**: duración total en minutos o nº de temporadas.
+
 + **listed_in**: género.
+
 + **description**: resumen descriptivo del contenido.
 
 
@@ -133,12 +148,67 @@ head(netflix_titles)
 
 
 
+## Visualización: WordCloud titulos Netflix
+```{r}
+# Creamos un corpus con los títulos
+corpus <- Corpus(VectorSource(netflix_titles$title))
+corpus
+# Preprocesamos el texto
+corpus <- tm_map(corpus, content_transformer(tolower))  # Convertir a minúsculas
+corpus <- tm_map(corpus, removePunctuation)  # Eliminar puntuación
+corpus <- tm_map(corpus, removeNumbers)  # Eliminar números
+corpus <- tm_map(corpus, removeWords, stopwords("en"))  # Eliminar palabras vacías en inglés
+corpus <- tm_map(corpus, stripWhitespace)  # Eliminar espacios en blanco adicionales
+
+# Generamos una matriz con los términos más usados de los titulos
+tdm <- TermDocumentMatrix(corpus)
+
+m <- as.matrix(tdm)
+
+word_freqs <- sort(rowSums(m), decreasing = TRUE)
+
+
+
+
+library(RColorBrewer)
+
+# Definir colores similares a Netflix
+netflix_colors <- c("#221F1F", "#B20710","#444444","#94040E", "#666666","#FF0000", "#888888", "#AAAAAA","#E50914")
+
+
+# Generar la nube de palabras con los colores ajustados
+wordcloud(words = names(word_freqs), freq = word_freqs, min.freq = 5,
+          max.words = 100, random.order = FALSE, colors = netflix_colors)
+
+```
+
+
+
+
+
 ## Visualización: "Crecimiento del nº de contenidos en Netflix por año"
 
 La siguiente visualización muestra el crecimiento de los contenidos de Netflix según los años, en este caso des de 2008 hasta 2021.
 En el gráfico, se observa el cambio de recuentos de forma acumulativa por cada contenido, ya sea película (Movie) o serie de televisión (TV SHow).
 
 ```{r}
+#Trabajamos en Flourish
+library(dplyr)
+
+# Agrupar por año y tipo, sumarizar los conteos acumulados
+accumulated_data <- netflix_titles %>%
+  group_by(year_added, type) %>%
+  summarise(total_count = n()) %>%
+  arrange(year_added) %>%
+  group_by(type) %>%
+  mutate(accumulated_count = cumsum(total_count))
+
+# Mostrar el nuevo conjunto de datos con los valores acumulados
+print(accumulated_data)
+
+
+
+
 # Función para mostrar de manera acumulada e interactiva
 accumulate_by <- function(dat, var) {
   var <- lazyeval::f_eval(var, dat)
@@ -148,6 +218,8 @@ accumulate_by <- function(dat, var) {
   })
   dplyr::bind_rows(dats)
 }
+
+
 
 # Transformaciones para acumular los contenidos de cada año
 mtv_growth <- netflix_titles %>% 
@@ -171,9 +243,15 @@ mtv_growth <- netflix_titles %>%
   theme(title = element_text(face = "bold"))
 
 
+
 # Gráfico interactivo con la animación
-ggplotly(mtv_growth, tooltip = c("text", "frame")) %>%
+ggcont<-ggplotly(mtv_growth, tooltip = c("text", "frame")) %>%
   config(displayModeBar = F)
+
+
+# Guardar el gráfico interactivo como un archivo HTML
+htmlwidgets::saveWidget(as_widget(ggcont), "/Users/luciablanc/Documents/AAESTUDIOS/UOC_Máster_Data_Science/4t_Semestre/Visualización_datos/PEC3/V2s3.html")
+
 
 ```
 
@@ -218,6 +296,7 @@ map_join <- mapdata %>%
   mutate(content_count = replace_na(content_count, 0))
 
 
+
 # Generamos el gráfico con ggplot() y plotly para hacer el gráfico interactivo
 temp <- ggplot() +
   geom_polygon(data = map_join, 
@@ -233,16 +312,21 @@ temp <- ggplot() +
                       trans = "pseudo_log",
                       breaks = c(0, 7, 56, 403, 3000),
                       labels = c(0, 7, 56, 403, 3000),
-                      low =  "bisque2",
-                      high = "#b20710") +
+                      low =  "#666666",
+                      high =  "#B20710",) +
   theme(panel.grid.major = element_blank(),
         axis.line = element_blank(),
         plot.title = element_text(face = "bold")) 
 
 
-ggplotly(temp, tooltip = "text") %>% 
+ggmap<-ggplotly(temp, tooltip = "text") %>% 
   config(displayModeBar = F) %>% 
   layout(legend = list(x = .1, y = .9))
+ggmap
+
+# Guardar el gráfico interactivo como un archivo HTML
+htmlwidgets::saveWidget(as_widget(ggmap), "/Users/luciablanc/Documents/AAESTUDIOS/UOC_Máster_Data_Science/4t_Semestre/Visualización_datos/PEC3/Vis3.html")
+
 
 ```
 
