@@ -33,5 +33,9 @@ Creación con R Studio
 ### 3. Distribución de contenidos de Netflix en diferentes países
 
 
+<img width="683" alt="Screenshot 2023-12-26 at 23 34 44" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/da5e5250-e779-4fa5-8ca8-bc46ce74dc70">
+
+
+
 
 
