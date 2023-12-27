@@ -18,7 +18,7 @@ Creación con R Studio y Flourish
 
 
 
-### 1. Wordcloud títulos Netflix
+### 1. Wordcloud títulos Netflix (Flourish)
 
 ![WordCloud Titles Netflix-2](https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/9c0c4ecf-1f30-4a53-984e-a3d6340ca722)
 
@@ -27,7 +27,7 @@ Creación con R Studio y Flourish
 
 
 
-### 2. Crecimiento del nº de contenidos de Netflix por año
+### 2. Crecimiento del nº de contenidos de Netflix por año (R)
 
 <img width="799" alt="Screenshot 2023-12-26 at 23 40 33" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/7c5de856-dd2a-4f78-88fb-a43a4da0ecba">
 
@@ -37,7 +37,7 @@ Creación con R Studio y Flourish
 
 
 
-### 3. Distribución de contenidos de Netflix en diferentes países
+### 3. Distribución de contenidos de Netflix en diferentes países (R)
 
 <img width="792" alt="Screenshot 2023-12-26 at 23 39 40" src="https://github.com/LuciaBlancV/PEC3_Visualizacion/assets/148953141/a8f99c53-f2db-4a82-b409-48676499ee8e">
 
